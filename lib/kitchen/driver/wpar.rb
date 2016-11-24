@@ -76,6 +76,10 @@ module Kitchen
           cmd += " -D rootvg=yes devname=#{config[:wpar_rootvg]}"
         end
 
+        unless config[:wpar_mksysb].nil?
+          cmd += " -C -B #{config[:wpar_mksysb]}"
+        end
+
         cmd
       end
 
