@@ -17,7 +17,7 @@
 # limitations under the License.
 
 require 'kitchen'
-require "kitchen/driver/wpar_version"
+require 'kitchen/driver/wpar_version'
 require 'net/ssh'
 
 module Kitchen
@@ -27,6 +27,7 @@ module Kitchen
     # Wpar driver for Kitchen.
     #
     # @author Alain Dejoux <adejoux@djouxtech.net>
+    # noinspection RubyDefParenthesesInspection,SpellCheckingInspection
     class Wpar < Kitchen::Driver::Base
 
       kitchen_driver_api_version 2
@@ -39,11 +40,17 @@ module Kitchen
       default_config :wpar_name,     'kitchenwpar'
       default_config :aix_host,      'localhost'
       default_config :aix_user,      'root'
+      default_config :writable,      'no'
 
       def create(state)
         if wpar_exists?(state)
           raise ActionFailed,'wpar already exists !'
         end
+
+        if config[:writable]
+          config[:mkwpar]=  '/usr/sbin/mkwpar -l'
+        end
+
         cmd = build_mkwpar_command()
         ssh_command(cmd, :stderr)
 
@@ -93,14 +100,14 @@ module Kitchen
 
       def wpar_exists?(state)
         output=ssh_command("#{config[:lswpar]} #{config[:wpar_name]}", :stderr)
-        if output.include?("0960-419")
+        if output.include?('0960-419')
           return false
         end
         true
       end
 
       def ssh_command(cmd, stream)
-        out = ""
+        out = ''
         begin
           host = config[:aix_host]
           user = config[:aix_user]
@@ -116,6 +123,7 @@ module Kitchen
           raise ActionFailed,'ssh command failed !'
         end
       end
+
     end
   end
 end
