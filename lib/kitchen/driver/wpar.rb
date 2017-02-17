@@ -40,15 +40,11 @@ module Kitchen
       default_config :wpar_name,     'kitchenwpar'
       default_config :aix_host,      'localhost'
       default_config :aix_user,      'root'
-      default_config :writable,      'no'
+      default_config :isWritable,     false
 
       def create(state)
         if wpar_exists?(state)
-          raise ActionFailed,'wpar already exists !'
-        end
-
-        if config[:writable]
-          config[:mkwpar]=  '/usr/sbin/mkwpar -l'
+k          raise ActionFailed,'wpar already exists !'
         end
 
         cmd = build_mkwpar_command()
@@ -70,6 +66,7 @@ module Kitchen
 
       protected
       def build_mkwpar_command()
+
         cmd = "#{config[:mkwpar]} -s -n #{config[:wpar_name]}"
         unless config[:wpar_address].nil?
           cmd += " -N address=#{config[:wpar_address]}"
@@ -86,6 +83,11 @@ module Kitchen
         unless config[:wpar_mksysb].nil?
           cmd += " -C -B #{config[:wpar_mksysb]}"
         end
+
+        if config[:isWritable]
+          cmd += ' -l'
+        end
+
 
         cmd
       end

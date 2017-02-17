@@ -16,9 +16,12 @@ Please read the [Driver usage][driver_usage] page for more details.
 * **wpar_name**     wpar name on AIX global system. Default to **kitchenwpar**.
 * **aix_host**	    aix global partition name. Default to **localhost**.
 * **aix_user**	    aix global partition username. Default to **root**.
+* **aix_key**	      Specify a path to the ssh key to create a connection.
 * **wpar_address**	wpar IP address to use. Not needed if an entry already exists in `/etc/hosts` on Global partition.
 * **wpar_vg**	      Volume group to use to store shared wpar filesystems. Default to **rootvg**.
 * **wpar_rootvg**	  Specify the `hdisk` to use to create a rootvg system wpar.
+* **wpar_mksysb**	  uses a wpar backup. Specify a path to a backup to save time.
+* **isWritable**	  adds the option ' -l' to have a non-shared, writable /usr file system and /opt file system. 
 
 
 ### <a name="config-require-chef-omnibus"></a> require\_chef\_omnibus
