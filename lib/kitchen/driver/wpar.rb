@@ -17,7 +17,7 @@
 # limitations under the License.
 
 require 'kitchen'
-require "kitchen/driver/wpar_version"
+require 'kitchen/driver/wpar_version'
 require 'net/ssh'
 
 module Kitchen
@@ -27,28 +27,31 @@ module Kitchen
     # Wpar driver for Kitchen.
     #
     # @author Alain Dejoux <adejoux@djouxtech.net>
+    # noinspection RubyDefParenthesesInspection,SpellCheckingInspection
     class Wpar < Kitchen::Driver::Base
 
       kitchen_driver_api_version 2
       plugin_version Kitchen::Driver::WPAR_VERSION
 
-      default_config :mkwpar,        '/usr/sbin/mkwpar'
-      default_config :startwpar,     '/usr/sbin/startwpar'
-      default_config :rmwpar,        '/usr/sbin/rmwpar'
-      default_config :lswpar,        '/usr/sbin/lswpar'
-      default_config :wpar_name,     'kitchenwpar'
-      default_config :aix_host,      'localhost'
-      default_config :aix_user,      'root'
+      default_config :mkwpar, '/usr/sbin/mkwpar'
+      default_config :startwpar, '/usr/sbin/startwpar'
+      default_config :rmwpar, '/usr/sbin/rmwpar'
+      default_config :lswpar, '/usr/sbin/lswpar'
+      default_config :wpar_name, 'kitchenwpar'
+      default_config :aix_host, 'localhost'
+      default_config :aix_user, 'root'
+      default_config :isWritable, false
 
       def create(state)
         if wpar_exists?(state)
-          raise ActionFailed,'wpar already exists !'
+          raise ActionFailed, 'wpar already exists !'
         end
+
         cmd = build_mkwpar_command()
         ssh_command(cmd, :stderr)
 
         unless wpar_exists?(state)
-          raise ActionFailed,'Cannot create wpar !'
+          raise ActionFailed, 'Cannot create wpar !'
         end
         state[:hostname]= config[:wpar_address] || config[:wpar_name]
         copy_key()
@@ -57,12 +60,13 @@ module Kitchen
       def destroy(state)
         ssh_command("#{config[:rmwpar]} -F #{config[:wpar_name]}", :stderr)
         if wpar_exists?(state)
-          raise ActionFailed,"couldn't destroy wpar !"
+          raise ActionFailed, "couldn't destroy wpar !"
         end
       end
 
       protected
       def build_mkwpar_command()
+
         cmd = "#{config[:mkwpar]} -s -n #{config[:wpar_name]}"
         unless config[:wpar_address].nil?
           cmd += " -N address=#{config[:wpar_address]}"
@@ -80,6 +84,11 @@ module Kitchen
           cmd += " -C -B #{config[:wpar_mksysb]}"
         end
 
+        if config[:isWritable]
+          cmd += ' -l'
+        end
+
+
         cmd
       end
 
@@ -93,14 +102,14 @@ module Kitchen
 
       def wpar_exists?(state)
         output=ssh_command("#{config[:lswpar]} #{config[:wpar_name]}", :stderr)
-        if output.include?("0960-419")
+        if output.include?('0960-419')
           return false
         end
         true
       end
 
       def ssh_command(cmd, stream)
-        out = ""
+        out = ''
         begin
           host = config[:aix_host]
           user = config[:aix_user]
@@ -113,9 +122,10 @@ module Kitchen
             out
           end
         rescue
-          raise ActionFailed,'ssh command failed !'
+          raise ActionFailed, 'ssh command failed !'
         end
       end
+
     end
   end
 end
