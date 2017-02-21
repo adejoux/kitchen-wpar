@@ -83,5 +83,21 @@ describe Kitchen::Driver::Wpar do
     end
 
 
+    it 'sets isVersioned to true' do
+      config[:isVersioned] = true
+      config[:wpar_mksysb] = 'aix.mksysb'
+      default_string = '/usr/sbin/mkwpar -s -n kitchenwpar -C -B aix.mksysb'
+
+      expect(driver.send(:build_mkwpar_command)).to eq(default_string)
+    end
+
+    it 'sets isVersioned to false' do
+      config[:isVersioned] = false
+      config[:wpar_mksysb] = 'aix.mksysb'
+      default_string = '/usr/sbin/mkwpar -s -n kitchenwpar -B aix.mksysb'
+
+      expect(driver.send(:build_mkwpar_command)).to eq(default_string)
+    end
+
   end
 end

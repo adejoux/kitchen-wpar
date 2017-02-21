@@ -41,6 +41,7 @@ module Kitchen
       default_config :aix_host, 'localhost'
       default_config :aix_user, 'root'
       default_config :isWritable, false
+      default_config :isVersioned, false
 
       def create(state)
         if wpar_exists?(state)
@@ -81,7 +82,10 @@ module Kitchen
         end
 
         unless config[:wpar_mksysb].nil?
-          cmd += " -C -B #{config[:wpar_mksysb]}"
+          if config[:isVersioned]
+            cmd += " -C"
+          end
+          cmd += " -B #{config[:wpar_mksysb]}"
         end
 
         if config[:isWritable]
