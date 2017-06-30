@@ -38,6 +38,7 @@ module Kitchen
       default_config :rmwpar, '/usr/sbin/rmwpar'
       default_config :lswpar, '/usr/sbin/lswpar'
       default_config :wpar_name, 'kitchenwpar'
+      default_config :wpar_copy_rootvg, false
       default_config :aix_host, 'localhost'
       default_config :aix_user, 'root'
       default_config :isWritable, false
@@ -86,6 +87,10 @@ module Kitchen
             cmd += " -C"
           end
           cmd += " -B #{config[:wpar_mksysb]}"
+        end
+
+        if config[:wpar_copy_rootvg]
+          cmd += ' -t'
         end
 
         if config[:isWritable]

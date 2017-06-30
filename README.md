@@ -21,6 +21,7 @@ Please read the [Driver usage][driver_usage] page for more details.
 * **wpar_vg**	      Volume group to use to store shared wpar filesystems. Default to **rootvg**.
 * **wpar_rootvg**	  Specify the `hdisk` to use to create a rootvg system wpar.
 * **wpar_mksysb**	  uses a wpar backup. Specify a path to a backup to save time.
+* **wpar_copy_rootvg**	  adds the option ' -t' to copy rootvg file systems.
 * **isVersioned**         create a versioned wpar. Used only with **wpar_mksysb**.
 * **isWritable**	  adds the option ' -l' to have a non-shared, writable /usr file system and /opt file system. 
 
