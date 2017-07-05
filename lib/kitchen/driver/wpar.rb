@@ -42,6 +42,14 @@ module Kitchen
       default_config :aix_user, 'root'
       default_config :isWritable, false
       default_config :isVersioned, false
+      default_config :echo, '/bin/echo'
+      default_config :clogin, '/usr/sbin/clogin'
+      default_config :lssrc, '/usr/bin/lssrc'
+      default_config :mkssys, '/usr/bin/mkssys'
+      default_config :startsrc, '/usr/bin/startsrc'
+      default_config :stopsrc, '/usr/bin/stopsrc'
+      default_config :pam_sshd_account_rule, 'sshd account required pam_aix'
+      default_config :pam_sshd_session_rule, 'sshd session required pam_aix'
 
       def create(state)
         if wpar_exists?(state)
@@ -56,12 +64,19 @@ module Kitchen
         end
         state[:hostname]= config[:wpar_address] || config[:wpar_name]
         copy_key()
-      end
 
-      def destroy(state)
-        ssh_command("#{config[:rmwpar]} -F #{config[:wpar_name]}", :stderr)
-        if wpar_exists?(state)
-          raise ActionFailed, "couldn't destroy wpar !"
+        # Ensure sshd is a defined service and is running so that
+        # kitchen can connect to the host and do work.
+        unless sshd_service_exists?
+          create_sshd_service
+        end
+
+        unless sshd_service_running?
+          start_sshd_service
+        end
+
+        unless pam_supports_sshd?
+          configure_pam
         end
       end
 
@@ -110,6 +125,72 @@ module Kitchen
           return false
         end
         true
+      end
+
+      # Determines if the sshd service is defined in the WPAR.
+      def sshd_service_exists?
+        # FIXME: We should probably check exit status rather than AIX-specific error codes.
+        output=ssh_command("#{config[:clogin]} #{config[:wpar_name]} #{config[:lssrc]} -s sshd", :stderr)
+        if output.include?('0513-085') # 0513-085 The sshd Subsystem is not on file.
+          return false
+        end
+        true
+      end
+
+      # Creates an sshd service.
+      def create_sshd_service
+        # FIXME: We should probably check exit status rather than AIX-specific error codes.
+        output=ssh_command("#{config[:clogin]} #{config[:wpar_name]} #{config[:mkssys]} -s sshd -p /usr/sbin/sshd -a '-D' -u 0 -S -n 15 -f 9 -R -G local", :stderr)
+        if output.include?('0513-071') # 0513-071 The sshd Subsystem has been added.
+          return true
+        end
+        false
+      end
+
+      # Determines if the sshd service is running.
+      def sshd_service_running?
+        # FIXME: We should probably check exit status rather than AIX-specific error codes.
+        output=ssh_command("#{config[:clogin]} #{config[:wpar_name]} #{config[:lssrc]} -s sshd", :stderr)
+        if output.include?('active')
+          return true
+        end
+        false # Status == inoperative
+      end
+
+       # Starts the sshd service.
+      def start_sshd_service
+        # FIXME: We should probably check exit status rather than AIX-specific error codes.
+        output=ssh_command("#{config[:clogin]} #{config[:wpar_name]} #{config[:startsrc]} -s sshd", :stderr)
+        if output.include?('0513-059') # 0513-059 The sshd Subsystem has been started. Subsystem PID is 2688212.
+          return true
+        end
+        false
+      end
+
+      # Determines if PAM support for sshd exists in this WPAR.
+      # This includes account and session rules.
+      def pam_supports_sshd?
+        pam_config_path = "/wpars/#{config[:wpar_name]}/etc/pam.conf"
+        account_output=ssh_command("grep '#{config[:pam_sshd_account_rule]}' #{pam_config_path}", :stderr)
+        session_output=ssh_command("grep '#{config[:pam_sshd_session_rule]}' #{pam_config_path}", :stderr)
+
+        unless account_output.include?("#{config[:pam_sshd_account_rule]}")
+          return false
+        end
+        unless session_output.include?("#{config[:pam_sshd_session_rule]}")
+          return false
+        end
+
+        true
+      end
+
+      # Configures PAM support for sshd in the WPAR.
+      def configure_pam
+        pam_config_path = "/wpars/#{config[:wpar_name]}/etc/pam.conf"
+        pam_sshd_rules = "#{config[:pam_sshd_account_rule]}\\n#{config[:pam_sshd_session_rule]}"
+        header = "\\n\\n# sshd Rules\\n"
+        cmd = "#{config[:echo]} \"#{header}#{pam_sshd_rules}\" >> #{pam_config_path}"
+        ssh_command(cmd, :stderr)
       end
 
       def ssh_command(cmd, stream)
