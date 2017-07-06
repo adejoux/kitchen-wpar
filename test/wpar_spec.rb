@@ -75,6 +75,13 @@ describe Kitchen::Driver::Wpar do
       expect(driver.send(:build_mkwpar_command)).to eq(default_string)
     end
 
+    it 'sets wpar_copy_rootvg to true' do
+      config[:wpar_copy_rootvg] = true
+      default_string = '/usr/sbin/mkwpar -s -n kitchenwpar -t'
+
+      expect(driver.send(:build_mkwpar_command)).to eq(default_string)
+    end
+
     it 'sets isWritable to false' do
       config[:isWritable] = false
       default_string = '/usr/sbin/mkwpar -s -n kitchenwpar'
