@@ -43,6 +43,7 @@ module Kitchen
       default_config :aix_user, 'root'
       default_config :isWritable, false
       default_config :isVersioned, false
+      default_config :share_network_resolution, true
       default_config :echo, '/bin/echo'
       default_config :clogin, '/usr/sbin/clogin'
       default_config :lssrc, '/usr/bin/lssrc'
@@ -87,6 +88,10 @@ module Kitchen
         cmd = "#{config[:mkwpar]} -s -n #{config[:wpar_name]}"
         unless config[:wpar_address].nil?
           cmd += " -N address=#{config[:wpar_address]}"
+        end
+
+        if config[:share_network_resolution]
+          cmd += " -r"
         end
 
         unless config[:wpar_vg].nil?
