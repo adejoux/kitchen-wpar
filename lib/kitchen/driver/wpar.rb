@@ -127,6 +127,12 @@ module Kitchen
           cmd += ' -l'
         end
 
+        if config[:resize]
+          if config[:resize][:directory].nil? || config[:resize][:size].nil?
+            raise ActionFailed, "Please provide both directory and size to the resize option."
+          end
+          cmd += " -M directory=#{config[:resize][:directory]} size=#{config[:resize][:size]}"
+        end
 
         cmd
       end
