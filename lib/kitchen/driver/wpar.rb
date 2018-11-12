@@ -53,7 +53,6 @@ module Kitchen
       default_config :sudo, ''
       default_config :pam_sshd_account_rule, 'sshd account required pam_aix'
       default_config :pam_sshd_session_rule, 'sshd session required pam_aix'
-      default_config :ssh_port, '22'
 
       def create(state)
         if wpar_exists?(state)
@@ -225,8 +224,7 @@ module Kitchen
           host = config[:aix_host]
           user = config[:aix_user]
           keys = config[:aix_key]
-          port = config[:ssh_port]
-          Net::SSH.start(host, port, user, :keys => keys) do |ssh|
+          Net::SSH.start(host, user, :keys => keys) do |ssh|
             ssh.exec!(cmd) do |channel, stream, data|
               out << data if stream == stream
               print data

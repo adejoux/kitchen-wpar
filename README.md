@@ -26,7 +26,6 @@ Please read the [Driver usage][driver_usage] page for more details.
 * **isWritable**	  adds the option ' -l' to have a non-shared, writable /usr file system and /opt file system. 
 * **share_network_resolution**	  adds the option ' -r' to share name resolution services (i.e. `/etc/resolv.conf`) with the wpar.
 * **sudo**	  path to `sudo` command in case we need it.
-* **ssh_port**	 Lets you specify the ssh port to use. Default to **22**.
 
 
 ### <a name="config-require-chef-omnibus"></a> require\_chef\_omnibus
