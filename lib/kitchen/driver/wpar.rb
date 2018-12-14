@@ -227,6 +227,7 @@ module Kitchen
           host = config[:aix_host]
           user = config[:aix_user]
           keys = config[:aix_key]
+          port = config[:ssh_port]
           Net::SSH.start(host, port, user, :keys => keys) do |ssh|
             ssh.exec!(cmd) do |channel, stream, data|
               out << data if stream == stream
