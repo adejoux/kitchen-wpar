@@ -21,6 +21,6 @@ module Kitchen
   module Driver
 
     # Version string for Wpar Kitchen driver
-    WPAR_VERSION = "0.4.2"
+    WPAR_VERSION = "0.4.3"
   end
 end

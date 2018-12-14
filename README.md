@@ -24,6 +24,7 @@ Please read the [Driver usage][driver_usage] page for more details.
 * **wpar_copy_rootvg**	  adds the option ' -t' to copy rootvg file systems.
 * **isVersioned**         create a versioned wpar. Used only with **wpar_mksysb**.
 * **isWritable**	  adds the option ' -l' to have a non-shared, writable /usr file system and /opt file system. 
+* **resize**        Adds the option ' -M' to resize mounts Takes in a list of hashes containing both directory and size keys.
 * **share_network_resolution**	  adds the option ' -r' to share name resolution services (i.e. `/etc/resolv.conf`) with the wpar.
 * **sudo**	  path to `sudo` command in case we need it.
 * **ssh_port**	 Lets you specify the ssh port to use. Default to **22**.

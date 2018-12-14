@@ -127,6 +127,14 @@ module Kitchen
           cmd += ' -l'
         end
 
+        if config[:resize]
+          config[:resize].each do | resize_instance |
+            if resize_instance[:directory].nil? || resize_instance[:size].nil?
+              raise ActionFailed, "Please provide both directory and size to the resize option."
+            end
+            cmd += " -M directory=#{resize_instance[:directory]} size=#{resize_instance[:size]}"
+          end
+        end
 
         cmd
       end
