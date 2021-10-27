@@ -86,7 +86,7 @@ module Kitchen
       
       #section to destroy wpar
       def destroy(state)
-        ssh_command("#{config[:rmwpar]} -F #{config[:wpar_name]}", :stderr)
+        ssh_command("#{config[:sudo]} #{config[:rmwpar]} -F #{config[:wpar_name]}", :stderr)
         if wpar_exists?(state)
           raise ActionFailed, "couldn't destroy wpar !"
         end
